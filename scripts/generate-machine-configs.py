@@ -17,10 +17,13 @@ with open(os.getcwd() + "/cluster/main/controlplane.yaml.j2") as file:
 # iterate over the devices described in your yaml file
 # and use jinja to render your configuration
 for machine in machines["machines"]:
-    print(
-        template.render(
-            machine=machine["name"],
-            network=network["general"],
-            dns=network["dns"],
-        )
+    print(machine["name"])
+    result = template.render(
+        machine=machine["name"],
+        network=network["general"],
+        dns=network["dns"],
     )
+    with open(
+        os.getcwd() + "/cluster/main/talos/" + machine["name"] + ".yaml", "w"
+    ) as file:
+        file.write(result)

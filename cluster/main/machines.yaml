@@ -1,5 +1,6 @@
 machines:
-  - name: sentinel 1
+  - name: sentinel-1
+    type: controlplane
     ip: 10.30.0.160
     interfaces:
       - name: enp0s1 # The interface name.
