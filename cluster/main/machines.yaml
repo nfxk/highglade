@@ -1,0 +1,6 @@
+machines:
+  - name: sentinel 1
+    ip: 10.30.0.160
+    interfaces:
+      - name: enp0s1 # The interface name.
+
