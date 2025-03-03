@@ -11,7 +11,8 @@ with open(os.getcwd() + "/cluster/main/network.yaml") as file:
     network = yaml.safe_load(file)
 
 # read your jinja template file
-with open(os.getcwd() + "/cluster/main/controlplane.yaml.j2") as file:
+# this is just a modified controleplane.yml file
+with open(os.getcwd() + "/cluster/main/machine-template.yaml.j2") as file:
     template = Template(file.read())
 
 # iterate over the devices described in your yaml file

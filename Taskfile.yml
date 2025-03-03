@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 tasks:
   generate-machine-config:
     cmds:
-      - jinja2
-
+      - python scripts/generate-machine-config.py
