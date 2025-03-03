@@ -5,3 +5,8 @@ machines:
     interfaces:
       - name: enp0s1 # The interface name.
 
+  - name: sentinel-2
+    type: worker
+    ip: 10.30.0.161
+    interfaces:
+      - name: enp0s1 # The interface name.
