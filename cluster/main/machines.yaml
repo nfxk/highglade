@@ -6,7 +6,31 @@ machines:
       - name: enp0s1 # The interface name.
 
   - name: sentinel-2
-    type: worker
+    type: controlplane
     ip: 10.30.0.161
+    interfaces:
+      - name: enp0s1 # The interface name.
+
+  - name: sentinel-3
+    type: controlplane
+    ip: 10.30.0.161
+    interfaces:
+      - name: enp0s1 # The interface name.
+
+  - name: sentinel-4
+    type: worker
+    ip: 10.30.0.164
+    interfaces:
+      - name: enp0s1 # The interface name.
+
+  - name: sentinel-5
+    type: worker
+    ip: 10.30.0.165
+    interfaces:
+      - name: enp0s1 # The interface name.
+
+  - name: sentinel-6
+    type: worker
+    ip: 10.30.0.166
     interfaces:
       - name: enp0s1 # The interface name.

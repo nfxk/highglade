@@ -1,0 +1,69 @@
+version: v1alpha1 # Indicates the schema used to decode the contents.
+
+debug: false # Enable verbose logging to the console.
+persist: true # Provides machine specific configuration options.
+machine:
+  type: worker
+  token: 4ejqgs.57l0bu0s9knzj7ai # The `token` is used by a machine to join the PKI of the cluster.
+  # The root certificate authority of the PKI.
+  ca:
+    crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJQekNCOHFBREFnRUNBaEVBc2JGYVJsRWtWUU16Smw1K0Rma1dKakFGQmdNclpYQXdFREVPTUF3R0ExVUUKQ2hNRmRHRnNiM013SGhjTk1qVXdNVE13TVRnek5qSTNXaGNOTXpVd01USTRNVGd6TmpJM1dqQVFNUTR3REFZRApWUVFLRXdWMFlXeHZjekFxTUFVR0F5dGxjQU1oQUdXdnI1RU9tU0ZmVUVzcFNiUGhJa1lZZkhZU3hoTi85WFNaClU5c3ZYdFRDbzJFd1h6QU9CZ05WSFE4QkFmOEVCQU1DQW9Rd0hRWURWUjBsQkJZd0ZBWUlLd1lCQlFVSEF3RUcKQ0NzR0FRVUZCd01DTUE4R0ExVWRFd0VCL3dRRk1BTUJBZjh3SFFZRFZSME9CQllFRkFVUU5rN24vZ3J5cUYxUQorY3NuQmxEMFVzUTdNQVVHQXl0bGNBTkJBRTRXZk1weHpyOVRCL3JKNzNRMlI2TExOSnZnNTk0d0RIRkxpU1JpCmpPdFZ2ekh1bXlleFI1eTRhb1BMbjY3WkFmclFRRHo4Sjd5OTJrNlpKbFNxSHdRPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    key: LS0tLS1CRUdJTiBFRDI1NTE5IFBSSVZBVEUgS0VZLS0tLS0KTUM0Q0FRQXdCUVlESzJWd0JDSUVJTGo3Z0dmbTZpalY2Rk5Db090Y1M5Tm9rbG5JWXNmRm9IM0xVa3hwdUdGMQotLS0tLUVORCBFRDI1NTE5IFBSSVZBVEUgS0VZLS0tLS0K
+  # Extra certificate subject alternative names for the machine's certificate.
+  certSANs: []
+
+  # Used to provide additional options to the kubelet.
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.32.3 # The `image` field is an optional reference to an alternative kubelet image.
+    defaultRuntimeSeccompProfileEnabled: true # Enable container runtime default Seccomp profile.
+    disableManifestsDirectory: true # The `disableManifestsDirectory` field configures the kubelet to get static pod manifests from the /etc/kubernetes/manifests directory.
+
+  # Provides machine specific network configuration options.
+  network:
+    # `interfaces` is used to define the network interface configuration.
+    interfaces:
+      - interface: enp0s1 # The interface name.
+        # Assigns static IP addresses to the interface.
+        addresses:
+          - 10.30.0.211/24
+
+        #       # A list of routes associated with the interface.
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
+        #           metric: 1024 # The optional metric for the route.
+        mtu: 1500 # The interface's MTU.
+
+    # Used to statically set the nameservers for the machine.
+    nameservers:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  # Used to provide instructions for installations.
+  install:
+    disk: /dev/sda # The disk used for installations.
+    image: factory.talos.dev/installer/7e83300eb8f8c1d2634a6744f997780d4342af07394c65032127e427a091e0e6:v1.9.2
+    # image: ghcr.io/siderolabs/installer:v1.8.4 # Allows for supplying the image used to perform the installation.
+    wipe: false # Indicates if the installation disk should be wiped at installation time.
+
+  # Used to configure the machine's container image registry mirrors.
+  registries: {}
+
+  # Features describe individual Talos features that can be switched on or off.
+  features:
+    rbac: true # Enable role-based access control (RBAC).
+    stableHostname: true # Enable stable default hostname.
+    apidCheckExtKeyUsage: true # Enable checks for extended key usage of client certificates in apid.
+    diskQuotaSupport: true # Enable XFS project quota support for EPHEMERAL partition and user disks.
+    # KubePrism - local proxy/load balancer on defined port that will distribute
+    kubePrism:
+      enabled: true # Enable KubePrism support - will start local load balancing proxy.
+      port: 7445 # KubePrism port.
+    # Configures host DNS caching resolver.
+    hostDNS:
+      enabled: true # Enable host DNS caching resolver.
+      forwardKubeDNSToHost: true # Use the host DNS resolver as upstream for Kubernetes CoreDNS pods.
+
+  # Configures the node labels for the machine.
+  nodeLabels:
+    node.kubernetes.io/exclude-from-external-load-balancers: ""

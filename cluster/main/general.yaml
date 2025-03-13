@@ -1,0 +1,18 @@
+general:
+  talos_image: factory.talos.dev/installer/7e83300eb8f8c1d2634a6744f997780d4342af07394c65032127e427a091e0e6:v1.9.2
+
+  network:
+    endpoint: https://10.30.0.1:6443
+    addresses:
+      - 10.30.0.211/24
+    routes:
+      network: 10.30.0.0/24 # The route's network (destination).
+      gateway: 10.30.0.1 # The route's gateway (if empty, creates link scope route).
+    mtu: 1500 # The interface's MTU.
+
+  dns:
+    primary: 8.8.8.8
+    secondary: 1.1.1.1
+
+  versions:
+    kubernetes: v1.32.3

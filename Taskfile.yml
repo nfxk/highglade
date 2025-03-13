@@ -1,6 +1,39 @@
 version: "3"
 
 tasks:
-  generate-machine-config:
+  format-yaml:
+    internal: true
     cmds:
-      - python scripts/generate-machine-config.py
+      - npx prettier {{ .DIR }} --write
+
+  format-node-configs:
+    cmds:
+      - task: format-yaml
+        vars:
+          DIR: ./cluster/main/talos/
+
+  generate-node-configs:
+    cmds:
+      - python scripts/generate-node-configs.py
+      - task: format-node-configs
+
+  bootstrap-talos-node:
+    cmds:
+      - talosctl bootstrap
+        --talosconfig=./cluster/shared/talosconfig
+        --insecure
+        # --cluster highglade \
+        # --nodes 10.30.0.160 \
+
+  export-kubeconfig:
+    internal: true
+    cmds:
+      - talosctl kubeconfig ./highglade-kubeconfig
+        -n {{ .NODE }}
+        -e {{ .NODE }}
+
+  export-kubeconfig-s1:
+    cmds:
+      - task: export-kubeconfig
+        vars:
+          NODE: 10.30.0.160
