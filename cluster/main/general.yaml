@@ -1,5 +1,6 @@
 general:
-  talos_image: factory.talos.dev/installer/7e83300eb8f8c1d2634a6744f997780d4342af07394c65032127e427a091e0e6:v1.9.2
+  talos_image: factory.talos.dev/installer/75f018a551305b0f790d3c7bdc395a4902a49597659ba1487e2cd927f0bddc78:v1.9.5
+  # talos_image: ghcr.io/siderolabs/installer:v1.9.5
 
   network:
     endpoint: https://10.30.0.1:6443

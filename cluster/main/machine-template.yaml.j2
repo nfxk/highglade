@@ -22,12 +22,11 @@ machine:
     network: 
       # `interfaces` is used to define the network interface configuration.
       interfaces:
-          - interface: enp0s1 # The interface name.
+      {% for interface in machine.interfaces %}
+          - interface: {{ interface.name }} # The interface name.
             # Assigns static IP addresses to the interface.
             addresses:
-            {% for address in network.addresses %}
-              - {{ address }}
-            {% endfor %}
+              - {{ interface.ip}}
 
             #       # A list of routes associated with the interface.
             routes:
@@ -35,6 +34,7 @@ machine:
                 gateway: {{ network.routes.gateway }}
             #           metric: 1024 # The optional metric for the route.
             mtu: 1500 # The interface's MTU.
+      {% endfor %}
             
 
     # Used to statically set the nameservers for the machine.
@@ -48,16 +48,11 @@ machine:
         image: {{ general.talos_image }}
         # image: ghcr.io/siderolabs/installer:v1.8.4 # Allows for supplying the image used to perform the installation.
         wipe: false # Indicates if the installation disk should be wiped at installation time.
-        
+        extraKernelArgs:
+            - talos.platform=metal
+    #
     # Used to configure the machine's container image registry mirrors.
-    registries: {}
-    mirrors:
-      ghcr.io:
-      # List of endpoints (URLs) for registry mirrors to use.
-        endpoints:
-            - https://registry.insecure
-            - https://ghcr.io/v2/
-
+    registries: {} 
 
     # Features describe individual Talos features that can be switched on or off.
     features:

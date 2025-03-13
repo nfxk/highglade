@@ -22,10 +22,10 @@ machine:
   network:
     # `interfaces` is used to define the network interface configuration.
     interfaces:
-      - interface: enp0s1 # The interface name.
+      - interface: eno1 # The interface name.
         # Assigns static IP addresses to the interface.
         addresses:
-          - 10.30.0.211/24
+          - 10.30.0.161/24
 
         #       # A list of routes associated with the interface.
         routes:
@@ -41,11 +41,13 @@ machine:
 
   # Used to provide instructions for installations.
   install:
-    disk: /dev/sda # The disk used for installations.
-    image: factory.talos.dev/installer/7e83300eb8f8c1d2634a6744f997780d4342af07394c65032127e427a091e0e6:v1.9.2
+    disk: /dev/sdb # The disk used for installations.
+    image: factory.talos.dev/installer/75f018a551305b0f790d3c7bdc395a4902a49597659ba1487e2cd927f0bddc78:v1.9.5
     # image: ghcr.io/siderolabs/installer:v1.8.4 # Allows for supplying the image used to perform the installation.
     wipe: false # Indicates if the installation disk should be wiped at installation time.
-
+    extraKernelArgs:
+      - talos.platform=metal
+  #
   # Used to configure the machine's container image registry mirrors.
   registries: {}
 
