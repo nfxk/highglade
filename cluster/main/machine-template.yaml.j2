@@ -44,7 +44,7 @@ machine:
 
     # Used to provide instructions for installations.
     install:
-        disk: /dev/sdb # The disk used for installations.
+        disk: /dev/{{ machine.install_disk }} # The disk used for installations.
         image: {{ general.talos_image }}
         # image: ghcr.io/siderolabs/installer:v1.8.4 # Allows for supplying the image used to perform the installation.
         wipe: false # Indicates if the installation disk should be wiped at installation time.

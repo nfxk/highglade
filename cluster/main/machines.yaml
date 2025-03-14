@@ -1,36 +1,42 @@
 machines:
   - name: sentinel-1
     type: controlplane
+    install_disk: sdb
     interfaces:
       - name: eno1 # The interface name.
         ip: 10.30.0.160/24
 
   - name: sentinel-2
     type: controlplane
+    install_disk: sdb
     interfaces:
       - name: eno1 # The interface name.
         ip: 10.30.0.161/24
 
   - name: sentinel-3
     type: controlplane
+    install_disk: nvme0n1
     interfaces:
       - name: eno1 # The interface name.
         ip: 10.30.0.162/24
 
   - name: sentinel-4
     type: worker
+    install_disk: sdb
     interfaces:
       - name: eno1 # The interface name.
         ip: 10.30.0.163/24
 
   - name: sentinel-5
     type: worker
+    install_disk: sdb
     interfaces:
       - name: eno1 # The interface name.
         ip: 10.30.0.164/24
 
   - name: sentinel-6
     type: worker
+    install_disk: sdb
     interfaces:
       - name: eno1 # The interface name.
         ip: 10.30.0.165/24
