@@ -1,21 +1,18 @@
 ---
 clusterName: highglade-cluster
-
 talosVersion: v1.9.5
-
 kubernetesVersion: v1.32.3
-
-endpoint: https://10.30.0.160:6443
+endpoint: https://${ENDPOINT_IP}:6443
 domain: cluster.highglade.local
 allowSchedulingOnMasters: true
 additionalMachineCertSans:
   - 10.30.0.160
 additionalApiServerCertSans:
-  - cluster.highglade.local
+  - ${ENDPOINT_DOMAIN}
 clusterPodNets:
-  - 10.244.0.0/16
+  - ${CLUSTER_PODNET}
 clusterSvcNets:
-  - 10.96.0.0/12
+  - ${CLUSTER_SUBNET}
 patches:
   - |-
     - op: add
@@ -34,7 +31,22 @@ controlPlane:
             - 10250
           protocol: tcp
         ingress:
-          - subnet: 10.30.0.0/24
+          - subnet: ${CLUSTER_SUBNET}
+      - name: apid-ingress
+        portSelector:
+          ports:
+            - 50000
+          protocol: tcp
+        ingress:
+          - subnet: 0.0.0.0/0
+          - subnet: ::/0
+      - name: trustd-ingress
+        portSelector:
+          ports:
+            - 50001
+          protocol: tcp
+        ingress:
+          - subnet: 10.96.0.0/12
 
   machineSpec:
     mode: metal
@@ -89,10 +101,8 @@ nodes:
     installDisk: /dev/sdb
     ipAddress: 10.30.0.161
     controlPlane: true
-    machineDisks:
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/sata
+    # machineDisks:
+    #   - device: /dev/sdb
     networkInterfaces:
       - interface: eno1
         addresses:
@@ -105,10 +115,10 @@ nodes:
     installDisk: /dev/sdb
     ipAddress: 10.30.0.162
     controlPlane: true
-    machineDisks:
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/sata
+    # machineDisks:
+    #   - device: /dev/sdb
+    #     partitions:
+    #       - mountpoint: /var/mnt/sata
     networkInterfaces:
       - interface: eno1
         addresses:
@@ -121,10 +131,10 @@ nodes:
     installDisk: /dev/sdb
     ipAddress: 10.30.0.163
     controlPlane: true
-    machineDisks:
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/sata
+    # machineDisks:
+    #   - device: /dev/sdb
+    #     partitions:
+    #       - mountpoint: /var/mnt/sata
     networkInterfaces:
       - interface: eno1
         addresses:
@@ -137,11 +147,11 @@ nodes:
   - hostname: sentinel-4
     installDisk: /dev/sdb
     ipAddress: 10.30.0.163
-    controlPlane: true
-    machineDisks:
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/sata
+    controlPlane: false
+    # machineDisks:
+    #   - device: /dev/sdb
+    #     partitions:
+    #       - mountpoint: /var/mnt/sata
     networkInterfaces:
       - interface: eno1
         addresses:
@@ -153,11 +163,11 @@ nodes:
   - hostname: sentinel-5
     installDisk: /dev/sdb
     ipAddress: 10.30.0.165
-    controlPlane: true
-    machineDisks:
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/sata
+    controlPlane: false
+    # machineDisks:
+    #   - device: /dev/sdb
+    #     partitions:
+    #       - mountpoint: /var/mnt/sata
     networkInterfaces:
       - interface: eno1
         addresses:
@@ -169,11 +179,11 @@ nodes:
   - hostname: sentinel-6
     installDisk: /dev/sdb
     ipAddress: 10.30.0.166
-    controlPlane: true
-    machineDisks:
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/sata
+    controlPlane: false
+    # machineDisks:
+    #   - device: /dev/sdb
+    #     partitions:
+    #       - mountpoint: /var/mnt/sata
     networkInterfaces:
       - interface: eno1
         addresses:
