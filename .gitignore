@@ -1,4 +1,5 @@
 venv
 highglade-kubeconfig
 support.zip
-cluster/main/talos/
+cluster/main/talos
+./clusterconfig

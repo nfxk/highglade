@@ -1,0 +1,184 @@
+---
+clusterName: highglade-cluster
+
+talosVersion: v1.9.5
+
+kubernetesVersion: v1.32.3
+
+endpoint: https://10.30.0.160:6443
+domain: cluster.highglade.local
+allowSchedulingOnMasters: true
+additionalMachineCertSans:
+  - 10.30.0.160
+additionalApiServerCertSans:
+  - cluster.highglade.local
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.96.0.0/12
+patches:
+  - |-
+    - op: add
+      path: /machine/env
+      value:
+        GRPC_GO_LOG_SEVERITY_LEVEL: error
+controlPlane:
+  nameservers:
+    - 10.30.0.1
+  ingressFirewall:
+    defaultAction: block
+    rules:
+      - name: kubelet-ingress
+        portSelector:
+          ports:
+            - 10250
+          protocol: tcp
+        ingress:
+          - subnet: 10.30.0.0/24
+
+  machineSpec:
+    mode: metal
+    arch: amd64
+    secureboot: false
+  schematic:
+    customization:
+      extraKernelArgs:
+        - talos.platform=metal
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/intel-ucode
+  nodeAnnotations:
+    installerUrl: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+  disableSearchDomain: true
+  kernelModules:
+    - name: br_netfilter
+      parameters:
+        - nf_conntrack_max=131072
+worker:
+  ingressFirewall:
+    defaultAction: block
+    rules:
+      - name: apid-ingress
+        portSelector:
+          ports:
+            - 50000
+          protocol: tcp
+        ingress:
+          - subnet: 10.96.0.0/12
+  machineSpec:
+    mode: metal
+    arch: amd64
+    secureboot: false
+  schematic:
+    customization:
+      extraKernelArgs:
+        - talos.platform=metal
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/intel-ucode
+  nodeAnnotations:
+    installerUrl: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+  disableSearchDomain: true
+  kernelModules:
+    - name: br_netfilter
+      parameters:
+        - nf_conntrack_max=131072
+
+nodes:
+  - hostname: sentinel-1
+    installDisk: /dev/sdb
+    ipAddress: 10.30.0.161
+    controlPlane: true
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/sata
+    networkInterfaces:
+      - interface: eno1
+        addresses:
+          - 10.30.0.161/24
+        mtu: 1500
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
+  - hostname: sentinel-2
+    installDisk: /dev/sdb
+    ipAddress: 10.30.0.162
+    controlPlane: true
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/sata
+    networkInterfaces:
+      - interface: eno1
+        addresses:
+          - 10.30.0.162/24
+        mtu: 1500
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
+  - hostname: sentinel-3
+    installDisk: /dev/sdb
+    ipAddress: 10.30.0.163
+    controlPlane: true
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/sata
+    networkInterfaces:
+      - interface: eno1
+        addresses:
+          - 10.30.0.163/24
+        mtu: 1500
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
+
+  - hostname: sentinel-4
+    installDisk: /dev/sdb
+    ipAddress: 10.30.0.163
+    controlPlane: true
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/sata
+    networkInterfaces:
+      - interface: eno1
+        addresses:
+          - 10.30.0.164/24
+        mtu: 1500
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
+  - hostname: sentinel-5
+    installDisk: /dev/sdb
+    ipAddress: 10.30.0.165
+    controlPlane: true
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/sata
+    networkInterfaces:
+      - interface: eno1
+        addresses:
+          - 10.30.0.165/24
+        mtu: 1500
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
+  - hostname: sentinel-6
+    installDisk: /dev/sdb
+    ipAddress: 10.30.0.166
+    controlPlane: true
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/sata
+    networkInterfaces:
+      - interface: eno1
+        addresses:
+          - 10.30.0.166/24
+        mtu: 1500
+        routes:
+          - network: 10.30.0.0/24
+            gateway: 10.30.0.1
