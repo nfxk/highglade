@@ -14,8 +14,7 @@ tasks:
 
   generate-node-configs:
     cmds:
-      - python scripts/generate-node-configs.py
-      - task: format-node-configs
+      - talhelper genconfig
 
   bootstrap-talos-node:
     cmds:
