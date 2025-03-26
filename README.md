@@ -2,16 +2,9 @@
 
 ## Dependencies:
 
-### Golang
 ```sh
-brew install go
+brew install $(<brew.txt)
 ```
 
-### mage 
-```sh
-brew install mage
-```
-### TalosCTL
-```sh
-brew install talosctl
-```
+## Talhelper setup
+

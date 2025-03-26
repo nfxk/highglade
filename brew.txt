@@ -1,0 +1,7 @@
+talhelper
+talosctl
+golang
+go-task
+sops
+age
+
