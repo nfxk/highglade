@@ -4,4 +4,5 @@ golang
 go-task
 sops
 age
+helm
 

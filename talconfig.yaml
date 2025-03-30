@@ -28,6 +28,8 @@ patches:
       path: /machine/env
       value:
         GRPC_GO_LOG_SEVERITY_LEVEL: error
+  - "@./patches/openebs-patch.yaml"
+
 controlPlane:
   nameservers:
     - 10.30.0.1

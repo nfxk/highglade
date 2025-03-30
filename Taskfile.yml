@@ -37,6 +37,15 @@ tasks:
         vars:
           NODE: 10.30.0.161
 
+  try-all:
+    cmds:
+      - talosctl apply-config -n 10.30.0.161 -e 10.30.0.161 -f clusterconfig/highglade-cluster-sentinel-1.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+      - talosctl apply-config -n 10.30.0.162 -e 10.30.0.162 -f clusterconfig/highglade-cluster-sentinel-2.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+      - talosctl apply-config -n 10.30.0.163 -e 10.30.0.163 -f clusterconfig/highglade-cluster-sentinel-3.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+      - talosctl apply-config -n 10.30.0.164 -e 10.30.0.164 -f clusterconfig/highglade-cluster-sentinel-4.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+      - talosctl apply-config -n 10.30.0.165 -e 10.30.0.165 -f clusterconfig/highglade-cluster-sentinel-5.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+      - talosctl apply-config -n 10.30.0.166 -e 10.30.0.166 -f clusterconfig/highglade-cluster-sentinel-6.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+
   update-control-points:
     cmds:
       - talosctl apply-config -n 10.30.0.161 -e 10.30.0.161 -f clusterconfig/highglade-cluster-sentinel-1.yaml --talosconfig ./clusterconfig/talosconfig
