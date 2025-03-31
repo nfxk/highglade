@@ -75,6 +75,15 @@ controlPlane:
           - subnet: $CP1/32
           - subnet: $CP2/32
           - subnet: $CP3/32
+      - name: openebs
+        portSelector:
+          ports:
+            - 10124
+            - 8420
+            - 4421
+          protocol: tcp
+        ingress:
+          - subnet: ${CLUSTER_SUBNET}
       # - name: cni-vxlan
       #   portSelector:
       #     ports:
@@ -101,6 +110,9 @@ controlPlane:
     - name: br_netfilter
       parameters:
         - nf_conntrack_max=131072
+  patches:
+    - "@./patches/mayastor-patch-cp.yaml"
+
 worker:
   ingressFirewall:
     defaultAction: block

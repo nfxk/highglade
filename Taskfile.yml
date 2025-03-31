@@ -58,6 +58,11 @@ tasks:
       - talosctl apply-config -n 10.30.0.162 -e 10.30.0.162 -f clusterconfig/highglade-cluster-sentinel-2.yaml --talosconfig ./clusterconfig/talosconfig --insecure
       - talosctl apply-config -n 10.30.0.163 -e 10.30.0.163 -f clusterconfig/highglade-cluster-sentinel-3.yaml --talosconfig ./clusterconfig/talosconfig --insecure
 
+  update-all:
+    cmds:
+      - task: update-control-points
+      - task: update-workers
+
   update-workers:
     cmds:
       - talosctl apply-config -n 10.30.0.164 -e 10.30.0.164 -f clusterconfig/highglade-cluster-sentinel-4.yaml --talosconfig ./clusterconfig/talosconfig
