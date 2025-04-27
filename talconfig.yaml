@@ -43,14 +43,15 @@ controlPlane:
           protocol: tcp
         ingress:
           - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       - name: apid-ingress
         portSelector:
           ports:
             - 50000
           protocol: tcp
         ingress:
-          - subnet: 0.0.0.0/0
-          - subnet: ::/0
+          - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       - name: trustd-ingress
         portSelector:
           ports:
@@ -58,14 +59,15 @@ controlPlane:
           protocol: tcp
         ingress:
           - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       - name: kubernetes-api-ingress
         portSelector:
           ports:
             - 6443
           protocol: tcp
         ingress:
-          - subnet: 0.0.0.0/0
-          - subnet: ::/0
+          - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       - name: etcd-ingress
         portSelector:
           ports:
@@ -84,6 +86,7 @@ controlPlane:
           protocol: tcp
         ingress:
           - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       # - name: cni-vxlan
       #   portSelector:
       #     ports:
