@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+patches:
+  - target:
+      group: rbac.authorization.k8s.io/v1
+      name: traefik-role
+      kind: Role
+    path: ./rbac/role.yaml
+  - target:
+      group: rbac.authorization.k8s.io/v1
+      name: traefik-rolebinding
+      kind: RoleBinding
+    path: ./rbac/rolebinding.yaml
+  - target:
+      group: traefik.containo.us/v1alpha
+      name: traefik-n8n-ingressroute
+      kind: ingressroute
+    path: ./patches/n8n-ingressroute.yaml
+  - target:
+      group: traefik.containo.us/v1alpha
+      name: traefik-ingress-provider
+      kind: kustomization
+    path: ./patches/provider-patch.yaml
+
+namespace: network-ingress

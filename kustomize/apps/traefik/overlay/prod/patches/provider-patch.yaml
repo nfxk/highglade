@@ -1,0 +1,7 @@
+apiVersion: traefik.containo.us/v1alpha
+kind: Kustomization
+metadata:
+  name: traefik-ingress-provider
+spec:
+  providers:
+    kubernetesIngress: {}

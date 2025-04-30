@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+name: traefik-base-role
+metadata:
+  name: traefik-role
+rules:
+  - apiGroups: [""]
+    resources: ["services", "pods", "namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
