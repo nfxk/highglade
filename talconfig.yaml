@@ -87,6 +87,14 @@ controlPlane:
         ingress:
           - subnet: ${CLUSTER_SUBNET}
           - subnet: ${CLUSTER_SUBNET_IPV6}
+      - name: web
+        portSelector:
+          ports:
+            - 80
+          protocol: tcp
+        ingress:
+          - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       # - name: cni-vxlan
       #   portSelector:
       #     ports:
@@ -115,6 +123,7 @@ controlPlane:
         - nf_conntrack_max=131072
   patches:
     - "@./patches/mayastor-patch-cp.yaml"
+    - "@./patches/apiserver-authorization.yaml"
 
 worker:
   ingressFirewall:
@@ -176,6 +185,7 @@ nodes:
         routes:
           - network: 10.30.0.0/24
             gateway: 10.30.0.1
+        vip:
   - hostname: sentinel-2
     installDisk: /dev/sdb
     ipAddress: 10.30.0.162

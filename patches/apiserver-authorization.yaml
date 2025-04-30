@@ -1,0 +1,4 @@
+cluster:
+  apiServer:
+    authorizationConfig:
+      - type: RBAC
