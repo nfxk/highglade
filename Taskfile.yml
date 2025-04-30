@@ -74,3 +74,12 @@ tasks:
       - talosctl apply-config -n 10.30.0.164 -e 10.30.0.164 -f clusterconfig/highglade-cluster-sentinel-4.yaml --talosconfig ./clusterconfig/talosconfig --insecure
       - talosctl apply-config -n 10.30.0.165 -e 10.30.0.165 -f clusterconfig/highglade-cluster-sentinel-5.yaml --talosconfig ./clusterconfig/talosconfig --insecure
       - talosctl apply-config -n 10.30.0.166 -e 10.30.0.166 -f clusterconfig/highglade-cluster-sentinel-6.yaml --talosconfig ./clusterconfig/talosconfig --insecure
+
+  install-helm-repos:
+    cmds:
+      - helm repo add traefik https://traefik.github.io/charts
+
+  deploy-traefik:
+    cmds:
+      - helm template traefik traefik/traefik > ./kustomize/apps/traefik/base/traefik-manifests.yaml
+      - kubectl kustomize ./kustomize/apps/traefik/overlay/prod | kubectl apply -f -
