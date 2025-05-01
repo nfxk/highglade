@@ -37,43 +37,64 @@ tasks:
         vars:
           NODE: 10.30.0.161
 
-  try-all:
+  # Generic apply configuration command (reusable for multiple nodes)
+  apply-config:
+    internal: true
     cmds:
-      - talosctl apply-config -n 10.30.0.161 -e 10.30.0.161 -f clusterconfig/highglade-cluster-sentinel-1.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
-      - talosctl apply-config -n 10.30.0.162 -e 10.30.0.162 -f clusterconfig/highglade-cluster-sentinel-2.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
-      - talosctl apply-config -n 10.30.0.163 -e 10.30.0.163 -f clusterconfig/highglade-cluster-sentinel-3.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
-      - talosctl apply-config -n 10.30.0.164 -e 10.30.0.164 -f clusterconfig/highglade-cluster-sentinel-4.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
-      - talosctl apply-config -n 10.30.0.165 -e 10.30.0.165 -f clusterconfig/highglade-cluster-sentinel-5.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
-      - talosctl apply-config -n 10.30.0.166 -e 10.30.0.166 -f clusterconfig/highglade-cluster-sentinel-6.yaml --talosconfig ./clusterconfig/talosconfig --mode=try
+      - talosctl apply-config \
+        -n {{ .NODE }} \
+        -e {{ .ENDPOINT }} \
+        -f {{ .CONFIG_FILE }} \
+        --talosconfig ./clusterconfig/talosconfig \
+        {{ .CLI_ARGS }}
 
+  # Apply config for control plane nodes (sentinel-1, sentinel-2, sentinel-3)
   update-control-points:
     cmds:
-      - talosctl apply-config -n 10.30.0.161 -e 10.30.0.161 -f clusterconfig/highglade-cluster-sentinel-1.yaml --talosconfig ./clusterconfig/talosconfig
-      - talosctl apply-config -n 10.30.0.162 -e 10.30.0.162 -f clusterconfig/highglade-cluster-sentinel-2.yaml --talosconfig ./clusterconfig/talosconfig
-      - talosctl apply-config -n 10.30.0.163 -e 10.30.0.163 -f clusterconfig/highglade-cluster-sentinel-3.yaml --talosconfig ./clusterconfig/talosconfig
-
-  update-machine-configs-insecure:
+      - task: apply-config
+        vars:
+          NODE: 10.30.0.161
+          ENDPOINT: 10.30.0.161
+          CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-1.yaml
+      - task: apply-config
+        vars:
+          NODE: 10.30.0.162
+          ENDPOINT: 10.30.0.162
+          CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-2.yaml
+      - task: apply-config
+        vars:
+          NODE: 10.30.0.163
+          ENDPOINT: 10.30.0.163
+          CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-3.yaml
+          #
+  # Apply config for worker nodes (sentinel-4, sentinel-5, sentinel-6)
+  update-workers:
     cmds:
-      - talosctl apply-config -n 10.30.0.161 -e 10.30.0.161 -f clusterconfig/highglade-cluster-sentinel-1.yaml --talosconfig ./clusterconfig/talosconfig --insecure
-      - talosctl apply-config -n 10.30.0.162 -e 10.30.0.162 -f clusterconfig/highglade-cluster-sentinel-2.yaml --talosconfig ./clusterconfig/talosconfig --insecure
-      - talosctl apply-config -n 10.30.0.163 -e 10.30.0.163 -f clusterconfig/highglade-cluster-sentinel-3.yaml --talosconfig ./clusterconfig/talosconfig --insecure
+      - task: apply-config {{ .CLI_ARGS }
+        vars:
+          NODE: 10.30.0.164
+          ENDPOINT: 10.30.0.164
+          CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-4.yaml
+      - task: apply-config
+        vars:
+          NODE: 10.30.0.165
+          ENDPOINT: 10.30.0.165
+          CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-5.yaml
+      - task: apply-config
+        vars:
+          NODE: 10.30.0.166
+          ENDPOINT: 10.30.0.166
+          CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-6.yaml
+
+  try-all:
+    cmds:
+      - task: update-control-points --mode=try
+      - task: update-workers --mode=try
 
   update-all:
     cmds:
       - task: update-control-points
       - task: update-workers
-
-  update-workers:
-    cmds:
-      - talosctl apply-config -n 10.30.0.164 -e 10.30.0.164 -f clusterconfig/highglade-cluster-sentinel-4.yaml --talosconfig ./clusterconfig/talosconfig
-      - talosctl apply-config -n 10.30.0.165 -e 10.30.0.165 -f clusterconfig/highglade-cluster-sentinel-5.yaml --talosconfig ./clusterconfig/talosconfig
-      - talosctl apply-config -n 10.30.0.166 -e 10.30.0.166 -f clusterconfig/highglade-cluster-sentinel-6.yaml --talosconfig ./clusterconfig/talosconfig
-
-  update-workers-insecure:
-    cmds:
-      - talosctl apply-config -n 10.30.0.164 -e 10.30.0.164 -f clusterconfig/highglade-cluster-sentinel-4.yaml --talosconfig ./clusterconfig/talosconfig --insecure
-      - talosctl apply-config -n 10.30.0.165 -e 10.30.0.165 -f clusterconfig/highglade-cluster-sentinel-5.yaml --talosconfig ./clusterconfig/talosconfig --insecure
-      - talosctl apply-config -n 10.30.0.166 -e 10.30.0.166 -f clusterconfig/highglade-cluster-sentinel-6.yaml --talosconfig ./clusterconfig/talosconfig --insecure
 
   install-helm-repos:
     cmds:
@@ -82,4 +103,5 @@ tasks:
   deploy-traefik:
     cmds:
       - helm template traefik traefik/traefik > ./kustomize/apps/traefik/base/traefik-manifests.yaml
+      - helm template traefik traefik/traefik-crds > ./kustomize/apps/traefik/base/traefik-crds-manifests.yaml
       - kubectl kustomize ./kustomize/apps/traefik/overlay/prod | kubectl apply -f -
