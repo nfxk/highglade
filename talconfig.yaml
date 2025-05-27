@@ -22,7 +22,13 @@ clusterPodNets:
   - ${POD_SUBNET}
 clusterSvcNets:
   - ${SERVICE_SUBNET}
+cniConfig:
+  name: "none"
 patches:
+  - |-
+    cluster:
+      proxy:
+        disabled: true
   - |-
     - op: add
       path: /machine/env
@@ -95,13 +101,15 @@ controlPlane:
         ingress:
           - subnet: ${CLUSTER_SUBNET}
           - subnet: ${CLUSTER_SUBNET_IPV6}
-      # - name: cni-vxlan
-      #   portSelector:
-      #     ports:
-      #       - $VXLAN_PORT
-      #     protocol: udp
-      #   ingress:
-      #     - subnet: $CLUSTER_SUBNET
+      - name: cni-vxlan
+        portSelector:
+          ports:
+            - $VXLAN_PORT
+            - $FLANNEL_PORT
+          protocol: udp
+        ingress:
+          - subnet: $CLUSTER_SUBNET
+          - subnet: ${CLUSTER_SUBNET_IPV6}
 
   machineSpec:
     mode: metal
@@ -123,7 +131,6 @@ controlPlane:
         - nf_conntrack_max=131072
   patches:
     - "@./patches/mayastor-patch-cp.yaml"
-    - "@./patches/apiserver-authorization.yaml"
 
 worker:
   ingressFirewall:
@@ -144,13 +151,15 @@ worker:
           protocol: tcp
         ingress:
           - subnet: $CLUSTER_SUBNET
-      # - name: cni-vxlan
-      #   portSelector:
-      #     ports:
-      #       - $VXLAN_PORT
-      #     protocol: udp
-      #   ingress:
-      #     - subnet: $CLUSTER_SUBNET
+      - name: cni-vxlan
+        portSelector:
+          ports:
+            - $VXLAN_PORT
+            - $FLANNEL_PORT
+          protocol: udp
+        ingress:
+          - subnet: $CLUSTER_SUBNET
+
   machineSpec:
     mode: metal
     arch: amd64
@@ -185,7 +194,6 @@ nodes:
         routes:
           - network: 10.30.0.0/24
             gateway: 10.30.0.1
-        vip:
   - hostname: sentinel-2
     installDisk: /dev/sdb
     ipAddress: 10.30.0.162
