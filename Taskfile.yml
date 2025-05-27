@@ -41,11 +41,11 @@ tasks:
   apply-config:
     internal: true
     cmds:
-      - talosctl apply-config \
-        -n {{ .NODE }} \
-        -e {{ .ENDPOINT }} \
-        -f {{ .CONFIG_FILE }} \
-        --talosconfig ./clusterconfig/talosconfig \
+      - talosctl apply-config
+        -n {{ .NODE }}
+        -e {{ .ENDPOINT }}
+        -f {{ .CONFIG_FILE }}
+        --talosconfig ./clusterconfig/talosconfig
         {{ .CLI_ARGS }}
 
   # Apply config for control plane nodes (sentinel-1, sentinel-2, sentinel-3)
@@ -70,7 +70,7 @@ tasks:
   # Apply config for worker nodes (sentinel-4, sentinel-5, sentinel-6)
   update-workers:
     cmds:
-      - task: apply-config {{ .CLI_ARGS }
+      - task: apply-config
         vars:
           NODE: 10.30.0.164
           ENDPOINT: 10.30.0.164
@@ -96,12 +96,18 @@ tasks:
       - task: update-control-points
       - task: update-workers
 
+  update-all-insecure:
+    cmds:
+      - talhelper gencommand apply --extra-flags
+
   install-helm-repos:
     cmds:
       - helm repo add traefik https://traefik.github.io/charts
 
   deploy-traefik:
     cmds:
-      - helm template traefik traefik/traefik > ./kustomize/apps/traefik/base/traefik-manifests.yaml
-      - helm template traefik traefik/traefik-crds > ./kustomize/apps/traefik/base/traefik-crds-manifests.yaml
-      - kubectl kustomize ./kustomize/apps/traefik/overlay/prod | kubectl apply -f -
+      - kubectl kustomize --enable-helm ./kustomize/apps/traefik/overlay/prod | kubectl apply -f -
+
+  deploy-cilium:
+    cmds:
+      - kubectl kustomize --enable-helm ./kustomize/network/cilium | kubectl apply -f -
