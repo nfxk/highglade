@@ -1,0 +1,52 @@
+providers:
+  kubernetesGateway: {}
+
+entryPoints:
+  web:
+    address: ":80"
+    reusePort: true
+  websecure:
+    address: ":443"
+    reusePort: true
+    http:
+      tls:
+        certResolver: letsencrypt
+  talos-dashboard:
+    address: ":50000"
+  traefik:
+    address: ":8080"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "foo@bar.com"
+      storage: /etc/traefik/ssl/acme.json
+      tlsChallenge: {}
+
+api:
+  dashboard: true
+  insecure: true
+
+log:
+  filePath: /var/log/traefik/traefik.log
+  format: json
+  level: debug
+
+serversTransport:
+  insecureSkipVerify: true
+
+accessLog:
+  filePath: /var/log/traefik/traefik-access.log
+  format: json
+  filters:
+    statusCodes:
+      - "200"
+      - "400-599"
+    retryAttempts: true
+    minDuration: "10ms"
+  bufferingSize: 0
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep

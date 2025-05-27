@@ -1,0 +1,8 @@
+apiVersion: traefik.io/v1alpha1
+kind: Kustomization
+metadata:
+  name: traefik-security
+spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault

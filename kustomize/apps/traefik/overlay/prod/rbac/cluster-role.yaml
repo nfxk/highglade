@@ -1,8 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-name: traefik-base-role
+kind: ClusterRole
+name: traefik-cluster-role
 metadata:
-  name: traefik-role
+  name: traefik-cluster-role
 rules:
   - apiGroups: [""]
     resources: ["services", "pods", "namespaces"]
