@@ -5,7 +5,7 @@ metadata:
   name: n8n-loadbalancer
 spec:
   selector:
-    app: n8n
+    app.kubernetes.io/name: n8n
   ports:
     - protocol: TCP
       port: 5678

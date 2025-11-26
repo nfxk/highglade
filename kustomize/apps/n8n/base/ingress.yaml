@@ -14,6 +14,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: n8n
+                name: n8n-loadbalancer
                 port:
                   number: 5678
