@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
-  - httproute.yaml
+  - http-route.yaml
+  - ingress-route.yaml
 
-namespace: default
+namespace: apps
