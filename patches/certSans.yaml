@@ -1,0 +1,7 @@
+machine:
+  certSANs:
+    - ${ENDPOINT_DOMAIN}
+    - ${ENDPOINT_IP}
+    - ${CP1}
+    - ${CP2}
+    - ${CP3}

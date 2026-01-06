@@ -1,16 +1,10 @@
 ---
 clusterName: highglade-cluster
-talosVersion: v1.9.5
-kubernetesVersion: v1.32.3
+talosVersion: v1.12.0
+kubernetesVersion: v1.35.0
 endpoint: https://${ENDPOINT_DOMAIN}:6443
 domain: cluster.highglade.local
-allowSchedulingOnMasters: true
-additionalMachineCertSans:
-  - ${ENDPOINT_DOMAIN}
-  - ${ENDPOINT_IP}
-  - ${CP1}
-  - ${CP2}
-  - ${CP3}
+allowSchedulingOnControlPlanes: true
 additionalApiServerCertSans:
   - ${ENDPOINT_DOMAIN}
   - ${ENDPOINT_IP}
@@ -29,11 +23,11 @@ patches:
     cluster:
       proxy:
         disabled: true
-  - |-
-    - op: add
-      path: /machine/env
-      value:
-        GRPC_GO_LOG_SEVERITY_LEVEL: error
+  # - |-
+  #   - op: add
+  #     path: /machine/env
+  #     value:
+  #       GRPC_GO_LOG_SEVERITY_LEVEL: error
   - "@./patches/openebs-patch.yaml"
 
 controlPlane:
@@ -86,8 +80,12 @@ controlPlane:
       - name: openebs
         portSelector:
           ports:
+            - 50053
+            - 50052
             - 10124
             - 8420
+            - 8081
+            - 8080
             - 4421
           protocol: tcp
         ingress:
@@ -101,12 +99,29 @@ controlPlane:
         ingress:
           - subnet: ${CLUSTER_SUBNET}
           - subnet: ${CLUSTER_SUBNET_IPV6}
+      - name: web-secure
+        portSelector:
+          ports:
+            - 443
+          protocol: tcp
+        ingress:
+          - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       - name: cni-vxlan
         portSelector:
           ports:
             - $VXLAN_PORT
             - $FLANNEL_PORT
           protocol: udp
+        ingress:
+          - subnet: $CLUSTER_SUBNET
+          - subnet: ${CLUSTER_SUBNET_IPV6}
+      - name: cilium-health
+        portSelector:
+          ports:
+            - 4244
+            - 4245
+          protocol: tcp
         ingress:
           - subnet: $CLUSTER_SUBNET
           - subnet: ${CLUSTER_SUBNET_IPV6}
@@ -131,6 +146,7 @@ controlPlane:
         - nf_conntrack_max=131072
   patches:
     - "@./patches/mayastor-patch-cp.yaml"
+    - "@./patches/certSans.yaml"
 
 worker:
   ingressFirewall:
@@ -151,6 +167,22 @@ worker:
           protocol: tcp
         ingress:
           - subnet: $CLUSTER_SUBNET
+      - name: web
+        portSelector:
+          ports:
+            - 80
+          protocol: tcp
+        ingress:
+          - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
+      - name: web-secure
+        portSelector:
+          ports:
+            - 443
+          protocol: tcp
+        ingress:
+          - subnet: ${CLUSTER_SUBNET}
+          - subnet: ${CLUSTER_SUBNET_IPV6}
       - name: cni-vxlan
         portSelector:
           ports:
@@ -159,6 +191,15 @@ worker:
           protocol: udp
         ingress:
           - subnet: $CLUSTER_SUBNET
+      - name: cilium-health
+        portSelector:
+          ports:
+            - 4245
+            - 4244
+          protocol: tcp
+        ingress:
+          - subnet: $CLUSTER_SUBNET
+          - subnet: ${CLUSTER_SUBNET_IPV6}
 
   machineSpec:
     mode: metal
@@ -181,8 +222,8 @@ worker:
 
 nodes:
   - hostname: sentinel-1
-    installDisk: /dev/sdb
-    ipAddress: 10.30.0.161
+    installDisk: /dev/sda
+    ipAddress: $CP1
     controlPlane: true
     # machineDisks:
     #   - device: /dev/sdb
@@ -195,8 +236,8 @@ nodes:
           - network: 10.30.0.0/24
             gateway: 10.30.0.1
   - hostname: sentinel-2
-    installDisk: /dev/sdb
-    ipAddress: 10.30.0.162
+    installDisk: /dev/sda
+    ipAddress: $CP2
     controlPlane: true
     # machineDisks:
     #   - device: /dev/sdb
@@ -228,8 +269,8 @@ nodes:
             gateway: 10.30.0.1
 
   - hostname: sentinel-4
-    installDisk: /dev/sdb
-    ipAddress: 10.30.0.163
+    installDisk: /dev/sda
+    ipAddress: 10.30.0.164
     controlPlane: false
     # machineDisks:
     #   - device: /dev/sdb
@@ -244,7 +285,7 @@ nodes:
           - network: 10.30.0.0/24
             gateway: 10.30.0.1
   - hostname: sentinel-5
-    installDisk: /dev/sdb
+    installDisk: /dev/sda
     ipAddress: 10.30.0.165
     controlPlane: false
     # machineDisks:
