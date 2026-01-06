@@ -27,6 +27,13 @@ securityContext:
       ]
     cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
 
+podSecurityContext:
+  # -- AppArmorProfile options for the `cilium-agent` and init containers
+  # appArmorProfile:
+  #   type: "RuntimeDefault"
+  seccompProfile:
+    type: "Unconfined"
+
 cgroup:
   autoMount:
     enabled: false
@@ -76,8 +83,6 @@ l2announcements:
 externalIPs:
   enabled: true
 
-enableCiliumEndpointSlice: true
-
 loadBalancer:
   # https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#maglev-consistent-hashing
   algorithm: maglev
@@ -95,16 +100,35 @@ envoy:
 
 hubble:
   enabled: true
+  listenAddress: ":4244"
   relay:
     enabled: true
     rollOutPods: true
+    tls:
+      auto:
+        enabled: true
   ui:
     enabled: true
     rollOutPods: true
   peerService:
-    # Note the final `.` to make this fully-qualified
-    # Adjust to match your cluster's domain as necessary
-    clusterDomain: cluster.highglade.local.
+    # -- Service Port for the Peer service.
+    # If not set, it is dynamically assigned to port 443 if TLS is enabled and to
+    # port 80 if not.
+    # servicePort: 80
+    # -- Target Port for the Peer service, must match the hubble.listenAddress'
+    # port.
+    targetPort: 4244
+    # -- The cluster domain to use to query the Hubble Peer service. It should
+    # be the local cluster.
+    #clusterDomain: cluster.highglade.local.
+    clusterDomain: cluster.highglade.local
+  monitor:
+    enabled: true
+  tls:
+    auto:
+      enabled: true
+      method: cronJob # generate certificates using hubble's hubblecertgen (check the hubblecertgen section for more details in cilium's helm values file)
+      certValidityDuration: 1095
 
 ingressController:
   enabled: false
