@@ -56,16 +56,19 @@ tasks:
           NODE: 10.30.0.161
           ENDPOINT: 10.30.0.161
           CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-1.yaml
+          # CLI_ARGS: --mode=reboot
       - task: apply-config
         vars:
           NODE: 10.30.0.162
           ENDPOINT: 10.30.0.162
           CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-2.yaml
+          # CLI_ARGS: --mode=reboot
       - task: apply-config
         vars:
           NODE: 10.30.0.163
           ENDPOINT: 10.30.0.163
           CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-3.yaml
+          # CLI_ARGS: --mode=reboot
           #
   # Apply config for worker nodes (sentinel-4, sentinel-5, sentinel-6)
   update-workers:
@@ -75,16 +78,19 @@ tasks:
           NODE: 10.30.0.164
           ENDPOINT: 10.30.0.164
           CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-4.yaml
+          # CLI_ARGS: --mode=reboot
       - task: apply-config
         vars:
           NODE: 10.30.0.165
           ENDPOINT: 10.30.0.165
           CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-5.yaml
+          # CLI_ARGS: --mode=reboot
       - task: apply-config
         vars:
           NODE: 10.30.0.166
           ENDPOINT: 10.30.0.166
           CONFIG_FILE: clusterconfig/highglade-cluster-sentinel-6.yaml
+          # CLI_ARGS: --mode=reboot
 
   try-all:
     cmds:
@@ -103,6 +109,7 @@ tasks:
   install-helm-repos:
     cmds:
       - helm repo add traefik https://traefik.github.io/charts
+      - helm repo add cilium https://helm.cilium.io/
 
   deploy-traefik:
     cmds:
@@ -111,3 +118,9 @@ tasks:
   deploy-cilium:
     cmds:
       - kubectl kustomize --enable-helm ./kustomize/network/cilium | kubectl apply -f -
+
+      # helm v3 until kubectl is updated:
+      # kustomize build --enable-helm ./kustomize/network/cilium --helm-command /opt/homebrew/opt/helm@3/bin/helm | kubectl apply -f -
+  deploy-openebs:
+    cmds:
+      - helm install openebs --namespace openebs openebs/openebs --set zfs-localpv.zfsNode.encrKeysDir=/var/openebs/keys
